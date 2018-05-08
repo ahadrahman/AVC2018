@@ -13,12 +13,8 @@
  * GitHub repo: https://github.com/ahadrahman/AVC2018
  */
 
-
-int main (){
-/* Contains logic to run the right methods at the right time/stage */
-
-return 0;
-}
+int mode;
+double error;
 
 void drive(char direction, int speed){
 /*Takes arguments and uses them to control the motors */
@@ -27,6 +23,42 @@ void drive(char direction, int speed){
 
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
+
+//Arthur's code *uwu*
+
+//Scan all the rows and find the min and max
+int scan_row = 160;
+int max = 0;
+    int min =255;
+   	for (int i = 0; i <320;i++){
+		int pix = get_pixel(scan_row,i,3);
+        if ( pix > max) {
+			max = pix;
+		}
+		if (pix < min){
+			min =pix;
+		}
+    }
+    
+    //Find the threshold
+    int thr = (max+min)/2;
+    printf(" min=%d max=%d threshold=%d\n", min, max,thr);
+    
+    int whi[320];  //array for white pixels
+    for (int i = 0; i <320;i++){
+		whi[i]= 0 ;
+		int pix = get_pixel(scan_row,i,3);
+		if ( pix > thr)
+		{
+			whi[i] = 1;
+		}
+    }
+
+//our code
+double error = 0;
+	for (int i = 0; i < 320; i++){
+		error = error + (pixelLine[i] * (i-160));
+	}
 
 return 0;
 }
@@ -55,8 +87,24 @@ int modeChecker(){
 /*Works out whether we are in the first stage (single line), second stage, (line maze),
 * or third stage (walled maze). Returns current stage. This will be used to decide
 * whether the readLine or findPath methods will control the motors, and then switching
-* to readWall when we reach that stage*/
-int stage = 0;
+* to readWall when we reach that stage 
+* network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
+int stage = 1; //set at 1 for testing purposes
 
 return stage;
+}
+
+int main (){
+/* Contains logic to run the right methods at the right time/stage */
+mode = modeChecker();
+while(1){
+	switch (mode){
+		case 0: openGate();
+		case 1: readLine();
+		case 2: findPath();
+		case 3: readWall();
+	}
+}
+
+return 0;
 }
