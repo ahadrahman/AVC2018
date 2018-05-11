@@ -23,6 +23,9 @@ void drive(char direction, int speed){
 
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
+take_picture();
+
+
 
 //Arthur's code *uwu*
 
@@ -54,11 +57,20 @@ int max = 0;
 		}
     }
 
-//our code
-double error = 0;
+	//our code
+	double error = 0;
 	for (int i = 0; i < 320; i++){
-		error = error + (pixelLine[i] * (i-160));
+		error = error + (whi[i] * (i-160));
 	}
+	
+	if (error < 0){
+		print("Left");
+		
+	} else if (error > 0) {
+		print("Right");
+	}
+	
+	
 
 return 0;
 }
