@@ -108,6 +108,8 @@ return stage;
 
 int main (){
 /* Contains logic to run the right methods at the right time/stage */
+init(); 
+	
 mode = modeChecker();
 while(1){
 	switch (mode){
