@@ -16,16 +16,18 @@
 int mode;
 double error;
 
-void drive(int speed){
+void drive(double err){
 /*Takes arguments and uses them to control the motors */
 
+double speed = 10.0;
+
 double kp = 0.005;
-double dv = error*kp;
+double dv = err*kp;
 
 double left = speed + dv;
 double right = speed - dv;
-set_motor(1, left);
-set_motor(2, right);
+set_motor(1, right);
+set_motor(2, left*(-1));
 
 }
 
@@ -75,7 +77,7 @@ int max = 0;
 		//print("Right");
 	//}
 	
-	drive(100);
+	drive(error);
 
 return 0;
 }
