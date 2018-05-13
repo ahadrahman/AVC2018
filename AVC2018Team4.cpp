@@ -16,18 +16,23 @@
 int mode;
 double error;
 
-void drive(char direction, int speed){
+void drive(int speed){
 /*Takes arguments and uses them to control the motors */
+
+double kp = 0.005;
+double dv = error*kp;
+
+double left = speed + dv;
+double right = speed - dv;
+set_motor(1, left);
+set_motor(2, right);
 
 }
 
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
+
 take_picture();
-
-
-
-//Arthur's code *uwu*
 
 //Scan all the rows and find the min and max
 int scan_row = 160;
@@ -63,14 +68,14 @@ int max = 0;
 		error = error + (whi[i] * (i-160));
 	}
 	
-	if (error < 0){
-		print("Left");
+	//if (error < 0){
+		//print("Left");
 		
-	} else if (error > 0) {
-		print("Right");
-	}
+	//} else if (error > 0) {
+		//print("Right");
+	//}
 	
-	
+	drive(100);
 
 return 0;
 }
