@@ -20,7 +20,7 @@ bool gateDone = false;
 void drive(double err){
 /*Takes arguments and uses them to control the motors */
 
-double speed = 10.0;
+double speed = 40.0;
 
 double kp = 0.005;
 double dv = err*kp;
