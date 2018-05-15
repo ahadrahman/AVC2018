@@ -15,6 +15,7 @@
 
 int mode;
 double error;
+bool gateDone = false;
 
 void drive(double err){
 /*Takes arguments and uses them to control the motors */
@@ -95,21 +96,23 @@ int findPath(){
 return 0;
 }
 
-bool openGate(){
+void openGate(){
 /*Connects to password server and sends password when required */
-bool done = false;
 
-//If connection to server is successful, send "Please", recive the password, and send the password
-if(connect_to_server(server, 1024) == 0){
-	char message = "Please";
-	if(send_to_server(message) == 0){
-		receive_from_server(message);
-		send_to_server(message);
-		done = true;
-		return done;
-	}
-}	
-	
+if (!gateDone){
+	//If connection to server is successful, send "Please", recive the password, and send the password
+	if(connect_to_server(server, 1024) == 0){
+		char message = "Please";
+		if(send_to_server(message) == 0){
+			receive_from_server(message);
+			send_to_server(message);
+			//done = true;
+			//return done;
+			gateDone = true;
+			mode = 1; //move to drive method
+		}
+	}	
+}
 }
 
 int modeChecker(){
@@ -118,7 +121,7 @@ int modeChecker(){
 * whether the readLine or findPath methods will control the motors, and then switching
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
-int stage = 1; //set at 1 for testing purposes
+int stage = 0; ////set at 1 for testing purposes
 
 return stage;
 }
