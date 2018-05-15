@@ -99,7 +99,17 @@ bool openGate(){
 /*Connects to password server and sends password when required */
 bool done = false;
 
-return done;
+//If connection to server is successful, send "Please", recive the password, and send the password
+if(connect_to_server(server, 1024) == 0){
+	char message = "Please";
+	if(send_to_server(message) == 0){
+		receive_from_server(message);
+		send_to_server(message);
+		done = true;
+		return done;
+	}
+}	
+	
 }
 
 int modeChecker(){
