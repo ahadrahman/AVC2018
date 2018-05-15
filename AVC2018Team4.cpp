@@ -99,10 +99,12 @@ return 0;
 void openGate(){
 /*Connects to password server and sends password when required */
 
+char server[] = "130.195.6.196";
+
 if (!gateDone){
 	//If connection to server is successful, send "Please", recive the password, and send the password
 	if(connect_to_server(server, 1024) == 0){
-		char message = "Please";
+		char message[] = "Please";
 		if(send_to_server(message) == 0){
 			receive_from_server(message);
 			send_to_server(message);
