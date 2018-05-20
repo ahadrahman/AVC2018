@@ -39,7 +39,7 @@ set_motor(2, leftSpeed*(-1));
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
 
-error = 0
+error = 0;
 take_picture();
 
 //COMPUTE THE ERROR
