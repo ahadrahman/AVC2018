@@ -14,20 +14,37 @@
  */
 
 int mode;
-double error;
+double currentError = 0.0;
+double prevError = 0.0;
+bool gateDone = false;
 
-void drive(double err){
-/*Takes arguments and uses them to control the motors */
+void drive(double currentError, double prevError){
+	/*Takes arguments and uses them to control the motors */
 
-double speed = 10.0;
+	// double speed = 40.0;
 
-double kp = 0.005;
-double dv = err*kp;
+	// double kp = 0.005;
+	// double dv = err*kp;
 
-double left = speed + dv;
-double right = speed - dv;
-set_motor(1, right);
-set_motor(2, left*(-1));
+	// double left = speed + dv;
+	// double right = speed - dv;
+	// set_motor(1, right);
+	// set_motor(2, left*(-1));
+
+	double kp = 0.0;
+	double kd = 0.0;
+
+	double straightSpeed = 40.0;
+	double rateOfChange = (currentError - prevError)/0.1;
+	double dv = (currentError * kp) + (rateOfChange * kd);
+
+	double right = straightSpeed - dv;
+	double left = straightSpeed + dv;
+
+	set_motor(1, right);
+	set_motor(2, left);
+
+	prevError = currentError;
 
 }
 
@@ -65,19 +82,12 @@ int max = 0;
     }
 
 	//our code
-	double error = 0;
 	for (int i = 0; i < 320; i++){
-		error = error + (whi[i] * (i-160));
+		currentError = currentError + (whi[i] * (i-160));
 	}
 	
-	//if (error < 0){
-		//print("Left");
-		
-	//} else if (error > 0) {
-		//print("Right");
-	//}
 	
-	drive(error);
+	drive(currentError, prevError);
 
 return 0;
 }
@@ -95,11 +105,23 @@ int findPath(){
 return 0;
 }
 
-bool openGate(){
+void openGate(){
 /*Connects to password server and sends password when required */
-bool done = false;
 
-return done;
+char server[] = "130.195.6.196";
+
+if (!gateDone){
+	//If connection to server is successful, send "Please", recive the password, and send the password
+	if(connect_to_server(server, 1024) == 0){
+		char message[] = "Please";
+		if(send_to_server(message) == 0){
+			receive_from_server(message);
+			send_to_server(message);
+			gateDone = true;
+			mode = 1; //move to readLine method
+		}
+	}	
+}
 }
 
 int modeChecker(){
@@ -108,7 +130,7 @@ int modeChecker(){
 * whether the readLine or findPath methods will control the motors, and then switching
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
-int stage = 1; //set at 1 for testing purposes
+int stage = 0; ////set at 1 for testing purposes
 
 return stage;
 }
