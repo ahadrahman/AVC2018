@@ -31,8 +31,8 @@ void drive(double currentError, double prevError){
 	// set_motor(1, right);
 	// set_motor(2, left*(-1));
 
-	double kp = 0.0;
-	double kd = 0.0;
+	double kp = 0.5;
+	double kd = 5;
 
 	double straightSpeed = 40.0;
 	double rateOfChange = (currentError - prevError)/0.1;
