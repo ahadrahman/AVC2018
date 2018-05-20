@@ -14,29 +14,35 @@
  */
 
 int mode;
-double error;
 bool gateDone = false;
+double prevError = 0;
+double error;
+double rateOfChange;
+double turnDifference; //dv
+double reactAmount = 0.005; //kp
+double smoothAmount = 0.5; //kd MYSTERY
+double speed = 40.0;
+double leftSpeed;
+double rightSpeed;
 
-void drive(double err){
+void drive(){
 /*Takes arguments and uses them to control the motors */
 
-double speed = 40.0;
+turnDifference = (error * reactAmount) + (rateOfChange * smoothAmount);
+leftSpeed = speed + turnDifference;
+rightSpeed = speed - turnDifference;
 
-double kp = 0.005;
-double dv = err*kp;
-
-double left = speed + dv;
-double right = speed - dv;
-set_motor(1, right);
-set_motor(2, left*(-1));
-
+set_motor(1, rightSpeed);
+set_motor(2, leftSpeed*(-1));
 }
 
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
 
+error = 0
 take_picture();
 
+//COMPUTE THE ERROR
 //Scan all the rows and find the min and max
 int scan_row = 160;
 int max = 0;
@@ -65,20 +71,16 @@ int max = 0;
 		}
     }
 
-	//our code
+	//calculate the error
 	double error = 0;
 	for (int i = 0; i < 320; i++){
 		error = error + (whi[i] * (i-160));
 	}
 	
-	//if (error < 0){
-		//print("Left");
-		
-	//} else if (error > 0) {
-		//print("Right");
-	//}
-	
-	drive(error);
+	//calculate rateOfChange and call drive	
+	rateOfChange = error - prevError / 0.1;
+	drive();
+	prevError = error;
 
 return 0;
 }
@@ -123,7 +125,8 @@ int modeChecker(){
 * whether the readLine or findPath methods will control the motors, and then switching
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
-int stage = 0; ////set at 1 for testing purposes
+
+int stage = 1; ////set at 1 for testing purposes
 
 return stage;
 }
