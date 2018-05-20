@@ -32,6 +32,8 @@ turnDifference = (error * reactAmount) + (rateOfChange * smoothAmount);
 leftSpeed = speed + turnDifference;
 rightSpeed = speed - turnDifference;
 
+printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
+
 set_motor(1, rightSpeed);
 set_motor(2, leftSpeed*(-1));
 }
