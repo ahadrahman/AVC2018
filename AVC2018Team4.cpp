@@ -87,7 +87,7 @@ int max = 0;
 		currentError = currentError + (whi[i] * (i-160));
 	}
 	
-	
+	printf("error: %.2f ", currentError);
 	drive(currentError, prevError);
 
 return 0;
