@@ -20,22 +20,16 @@ double error;
 double rateOfChange;
 double turnDifference; //dv
 double reactAmount = 0.005; //kp
-double smoothAmount = 0.5; //kd MYSTERY
+double smoothAmount = 0.1; //kd MYSTERY
+
 double speed = 40.0;
 double leftSpeed;
 double rightSpeed;
 
 void drive(){
 /*Takes arguments and uses them to control the motors */
-
-turnDifference = (error * reactAmount) + (rateOfChange * smoothAmount);
-leftSpeed = speed + turnDifference;
-rightSpeed = speed - turnDifference;
-
-printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
-
-set_motor(1, rightSpeed);
-set_motor(2, leftSpeed*(-1));
+		set_motor(1, rightSpeed);
+		set_motor(2, leftSpeed*(-1));
 }
 
 int readLine(){
@@ -80,8 +74,18 @@ int max = 0;
 	}
 	
 	//calculate rateOfChange and call drive	
-	rateOfChange = error - prevError / 0.1;
+	rateOfChange = (error - prevError);
+	float p_error = error * reactAmount;
+	float d_error = rateOfChange * smoothAmount;
+	turnDifference = p_error + d_error;
+	leftSpeed = speed + turnDifference;
+	rightSpeed = speed - turnDifference;
+	printf("P: %f, D: %f", p_error, d_error);
+
+	printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
+
 	drive();
+	
 	prevError = error;
 
 return 0;
@@ -105,8 +109,9 @@ void openGate(){
 
 char server[] = "130.195.6.196";
 
-if (!gateDone){
+while (!gateDone){
 	//If connection to server is successful, send "Please", recive the password, and send the password
+	
 	if(connect_to_server(server, 1024) == 0){
 		char message[] = "Please";
 		if(send_to_server(message) == 0){
