@@ -19,7 +19,7 @@ double prevError = 0;
 double error;
 double rateOfChange;
 double turnDifference; //dv
-double reactAmount = 0.005; //kp
+double reactAmount = 0.01; //kp
 double smoothAmount = 0.1; //kd MYSTERY
 
 double speed = 40.0;
