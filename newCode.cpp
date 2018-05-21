@@ -14,31 +14,45 @@
  */
 
 int mode;
+double currentError = 0.0;
+double prevError = 0.0;
 bool gateDone = false;
-double prevError = 0;
-double error;
-double rateOfChange;
-double turnDifference; //dv
-double reactAmount = 0.005; //kp
-double smoothAmount = 0.1; //kd MYSTERY
 
-double speed = 40.0;
-double leftSpeed;
-double rightSpeed;
+void drive(double currentError, double prevError){
+	/*Takes arguments and uses them to control the motors */
 
-void drive(){
-/*Takes arguments and uses them to control the motors */
-		set_motor(1, rightSpeed);
-		set_motor(2, leftSpeed*(-1));
+	// double speed = 40.0;
+
+	// double kp = 0.005;
+	// double dv = err*kp;
+
+	// double left = speed + dv;
+	// double right = speed - dv;
+	// set_motor(1, right);
+	// set_motor(2, left*(-1));
+
+	double kp = 0.0;
+	double kd = 0.0;
+
+	double straightSpeed = 40.0;
+	double rateOfChange = (currentError - prevError)/0.1;
+	double dv = (currentError * kp) + (rateOfChange * kd);
+
+	double right = straightSpeed - dv;
+	double left = straightSpeed + dv;
+
+	set_motor(1, right);
+	set_motor(2, left);
+
+	prevError = currentError;
+
 }
 
 int readLine(){
 /*Takes input from the camera and sends instructions to drive method */
 
-error = 0;
 take_picture();
 
-//COMPUTE THE ERROR
 //Scan all the rows and find the min and max
 int scan_row = 160;
 int max = 0;
@@ -67,26 +81,13 @@ int max = 0;
 		}
     }
 
-	//calculate the error
-	double error = 0;
+	//our code
 	for (int i = 0; i < 320; i++){
-		error = error + (whi[i] * (i-160));
+		currentError = currentError + (whi[i] * (i-160));
 	}
 	
-	//calculate rateOfChange and call drive	
-	rateOfChange = (error - prevError);
-	float p_error = error * reactAmount;
-	float d_error = rateOfChange * smoothAmount;
-	turnDifference = p_error + d_error;
-	leftSpeed = speed + turnDifference;
-	rightSpeed = speed - turnDifference;
-	printf("P: %f, D: %f", p_error, d_error);
-
-	printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
-
-	drive();
 	
-	prevError = error;
+	drive(currentError, prevError);
 
 return 0;
 }
@@ -109,18 +110,15 @@ void openGate(){
 
 char server[] = "130.195.6.196";
 
-while (!gateDone){
+if (!gateDone){
 	//If connection to server is successful, send "Please", recive the password, and send the password
-	
 	if(connect_to_server(server, 1024) == 0){
 		char message[] = "Please";
 		if(send_to_server(message) == 0){
 			receive_from_server(message);
 			send_to_server(message);
-			//done = true;
-			//return done;
 			gateDone = true;
-			mode = 1; //move to drive method
+			mode = 1; //move to readLine method
 		}
 	}	
 }
@@ -132,8 +130,7 @@ int modeChecker(){
 * whether the readLine or findPath methods will control the motors, and then switching
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
-
-int stage = 1; ////set at 1 for testing purposes
+int stage = 0; ////set at 1 for testing purposes
 
 return stage;
 }
