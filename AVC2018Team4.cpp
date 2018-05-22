@@ -22,7 +22,7 @@ double turnDifference; //dv
 double reactAmount = 0.01; //kp
 double smoothAmount = 0.05; //kd MYSTERY
 
-double speed = 40.0;
+double speed = 50.0;
 double leftSpeed;
 double rightSpeed;
 
@@ -32,24 +32,24 @@ void drive(){
 		set_motor(2, leftSpeed*(-1));
 }
 
-int readLine(){
-/*Takes input from the camera and sends instructions to drive method */
+void readLine(){
+	/*Takes input from the camera and sends instructions to drive method */
 
-error = 0;
-take_picture();
+	error = 0;
+	take_picture();
 
-//COMPUTE THE ERROR
-//Scan all the rows and find the min and max
-int scan_row = 160;
-int max = 0;
-    int min =255;
-   	for (int i = 0; i <320;i++){
+	//COMPUTE THE ERROR
+	//Scan all the rows and find the min and max
+	int scan_row = 160;
+	int max = 0;
+    int min = 255;
+   	for (int i = 0; i < 320;i++){
 		int pix = get_pixel(scan_row,i,3);
         if ( pix > max) {
 			max = pix;
 		}
 		if (pix < min){
-			min =pix;
+			min = pix;
 		}
     }
     
@@ -57,8 +57,9 @@ int max = 0;
     int thr = (max+min)/2;
     printf(" min=%d max=%d threshold=%d\n", min, max,thr);
     
+	
     int whi[320];  //array for white pixels
-    for (int i = 0; i <320;i++){
+    for (int i = 0; i < 320;i++){
 		whi[i]= 0 ;
 		int pix = get_pixel(scan_row,i,3);
 		if ( pix > thr)
@@ -66,6 +67,27 @@ int max = 0;
 			whi[i] = 1;
 		}
     }
+    
+    //if line is all white, stage = 2;
+    int sum = 0;
+    for (int element = 0; element < 320; element++){
+		sum = sum + whi[element];
+	}
+	if (sum > 300){ //all white
+		if (mode == 1){
+			mode = 2;
+			return;
+		}
+		else if (mode == 2){
+			turnLeft();
+			return;
+		}
+	}
+	if (sum < 10) { //if most of pixels are black, then go backwards
+		set_motor(1, -50);
+		set_motor(2, +50);
+		return;
+	}
 
 	//calculate the error
 	double error = 0;
@@ -88,7 +110,13 @@ int max = 0;
 	
 	prevError = error;
 
-return 0;
+}
+
+void turnLeft(){ //turn left 90d
+	set_motor(1, 0);
+	set_motor(2, 50);
+	sleep1(1,0);
+	return;
 }
 
 int readWall(){
@@ -100,7 +128,14 @@ return 0;
 int findPath(){
 /*Takes input from readLine and works out the correct path forward, then
  * passes instructions to drive method */
-
+	set_motor(1, 0);
+	set_motor(2, 0);
+	
+	
+	
+	
+	
+	
 return 0;
 }
 
@@ -144,11 +179,12 @@ init();
 	
 mode = modeChecker();
 while(1){
+	printf("MODE: %d", mode);
 	switch (mode){
-		case 0: openGate();
-		case 1: readLine();
-		case 2: findPath();
-		case 3: readWall();
+		case 0: openGate(); //quadrant 1
+		case 1: readLine(); //quadrant 2
+		case 2: readLine(); //quadrant 3 yeet
+		case 3: readWall(); //quadrant 4
 	}
 }
 
