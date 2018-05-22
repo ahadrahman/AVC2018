@@ -32,7 +32,7 @@ void drive(){
 		set_motor(2, leftSpeed*(-1));
 }
 
-void readLine(){
+int readLine(){
 	/*Takes input from the camera and sends instructions to drive method */
 
 	error = 0;
@@ -70,16 +70,16 @@ void readLine(){
     
     //if line is all white, stage = 2;
     int sum = 0;
-    for (int element : whi){
-		sum = sum + element;
+    for (int element = 0; element < whi.length; element++){
+		sum = sum + whi[element];
 	}
 	if (sum > 300){
 		mode = 2;
 		return;
 	}
-	if (sum < 10) {
-		set_motor(1, -150);
-		set_motor(2, -150);
+	if (sum < 10) { //if most of pixels are black, then go backwards
+		set_motor(1, -50);
+		set_motor(2, +50);
 		return;
 	}
 
@@ -103,6 +103,8 @@ void readLine(){
 	drive();
 	
 	prevError = error;
+
+return 0;
 }
 
 int readWall(){
@@ -114,7 +116,8 @@ return 0;
 int findPath(){
 /*Takes input from readLine and works out the correct path forward, then
  * passes instructions to drive method */
-
+	stop(1);
+	stop(2);
 return 0;
 }
 
