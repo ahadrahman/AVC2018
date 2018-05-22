@@ -104,7 +104,6 @@ void readLine(){
 	
 	prevError = error;
 
-return 0;
 }
 
 int readWall(){
