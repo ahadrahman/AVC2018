@@ -29,7 +29,7 @@ double rightSpeed;
 void turnLeft(){ //turn left 90d
 	set_motor(1, 0);
 	set_motor(2, 50);
-	sleep1(1,0);
+	sleep1(3,0);
 	return;
 }
 
