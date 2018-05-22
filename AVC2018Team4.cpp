@@ -73,7 +73,7 @@ void readLine(){
     for (int element = 0; element < 320; element++){
 		sum = sum + whi[element];
 	}
-	if (sum > 300){
+	if (sum > 300){ //all white
 		mode = 2;
 		return;
 	}
@@ -160,6 +160,7 @@ init();
 	
 mode = modeChecker();
 while(1){
+	printf("MODE: %d", mode);
 	switch (mode){
 		case 0: openGate(); //quadrant 1
 		case 1: readLine(); //quadrant 2
