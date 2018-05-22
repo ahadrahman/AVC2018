@@ -115,8 +115,8 @@ return 0;
 int findPath(){
 /*Takes input from readLine and works out the correct path forward, then
  * passes instructions to drive method */
-	set_motor(1, 0);
-	set_motor(2, 0);
+	stop(1);
+	stop(2);
 return 0;
 }
 
