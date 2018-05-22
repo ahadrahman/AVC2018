@@ -14,32 +14,42 @@
  */
 
 int mode;
+bool gateDone = false;
+double prevError = 0;
 double error;
+double rateOfChange;
+double turnDifference; //dv
+double reactAmount = 0.01; //kp
+double smoothAmount = 0.05; //kd MYSTERY
 
-void drive(char direction, int speed){
+double speed = 50.0;
+double leftSpeed;
+double rightSpeed;
+
+void drive(){
 /*Takes arguments and uses them to control the motors */
-
+		set_motor(1, rightSpeed);
+		set_motor(2, leftSpeed*(-1));
 }
 
 int readLine(){
-/*Takes input from the camera and sends instructions to drive method */
-take_picture();
+	/*Takes input from the camera and sends instructions to drive method */
 
+	error = 0;
+	take_picture();
 
-
-//Arthur's code *uwu*
-
-//Scan all the rows and find the min and max
-int scan_row = 160;
-int max = 0;
-    int min =255;
-   	for (int i = 0; i <320;i++){
+	//COMPUTE THE ERROR
+	//Scan all the rows and find the min and max
+	int scan_row = 160;
+	int max = 0;
+    int min = 255;
+   	for (int i = 0; i < 320;i++){
 		int pix = get_pixel(scan_row,i,3);
         if ( pix > max) {
 			max = pix;
 		}
 		if (pix < min){
-			min =pix;
+			min = pix;
 		}
     }
     
@@ -47,8 +57,9 @@ int max = 0;
     int thr = (max+min)/2;
     printf(" min=%d max=%d threshold=%d\n", min, max,thr);
     
+	
     int whi[320];  //array for white pixels
-    for (int i = 0; i <320;i++){
+    for (int i = 0; i < 320;i++){
 		whi[i]= 0 ;
 		int pix = get_pixel(scan_row,i,3);
 		if ( pix > thr)
@@ -56,21 +67,42 @@ int max = 0;
 			whi[i] = 1;
 		}
     }
+    
+    //if line is all white, stage = 2;
+    int sum = 0;
+    for (int element : whi){
+		sum = sum + element;
+	}
+	if (sum > 300){
+		mode = 2;
+		return;
+	}
+	if (sum < 10) {
+		set_motor(1, -150);
+		set_motor(2, -150);
+		return;
+	}
 
-	//our code
+	//calculate the error
 	double error = 0;
 	for (int i = 0; i < 320; i++){
 		error = error + (whi[i] * (i-160));
 	}
 	
-	if (error < 0){
-		print("Left");
-		
-	} else if (error > 0) {
-		print("Right");
-	}
+	//calculate rateOfChange and call drive	
+	rateOfChange = (error - prevError);
+	float p_error = error * reactAmount;
+	float d_error = rateOfChange * smoothAmount;
+	turnDifference = p_error + d_error;
+	leftSpeed = speed + turnDifference;
+	rightSpeed = speed - turnDifference;
+	printf("P: %f, D: %f", p_error, d_error);
+
+	printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
+
+	drive();
 	
-	
+	prevError = error;
 
 return 0;
 }
@@ -88,11 +120,26 @@ int findPath(){
 return 0;
 }
 
-bool openGate(){
+void openGate(){
 /*Connects to password server and sends password when required */
-bool done = false;
 
-return done;
+char server[] = "130.195.6.196";
+
+while (!gateDone){
+	//If connection to server is successful, send "Please", recive the password, and send the password
+	
+	if(connect_to_server(server, 1024) == 0){
+		char message[] = "Please";
+		if(send_to_server(message) == 0){
+			receive_from_server(message);
+			send_to_server(message);
+			//done = true;
+			//return done;
+			gateDone = true;
+			mode = 1; //move to drive method
+		}
+	}	
+}
 }
 
 int modeChecker(){
@@ -101,20 +148,23 @@ int modeChecker(){
 * whether the readLine or findPath methods will control the motors, and then switching
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
-int stage = 1; //set at 1 for testing purposes
+
+int stage = 1; ////set at 1 for testing purposes
 
 return stage;
 }
 
 int main (){
 /* Contains logic to run the right methods at the right time/stage */
+init(); 
+	
 mode = modeChecker();
 while(1){
 	switch (mode){
-		case 0: openGate();
-		case 1: readLine();
-		case 2: findPath();
-		case 3: readWall();
+		case 0: openGate(); //quadrant 1
+		case 1: readLine(); //quadrant 2
+		case 2: findPath(); //quadrant 3
+		case 3: readWall(); //quadrant 4
 	}
 }
 
