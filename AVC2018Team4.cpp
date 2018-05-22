@@ -32,7 +32,7 @@ void drive(){
 		set_motor(2, leftSpeed*(-1));
 }
 
-int readLine(){
+void readLine(){
 	/*Takes input from the camera and sends instructions to drive method */
 
 	error = 0;
@@ -70,7 +70,7 @@ int readLine(){
     
     //if line is all white, stage = 2;
     int sum = 0;
-    for (int element = 0; element < whi.length; element++){
+    for (int element = 0; element < 320; element++){
 		sum = sum + whi[element];
 	}
 	if (sum > 300){
