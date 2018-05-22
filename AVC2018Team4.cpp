@@ -32,7 +32,7 @@ void drive(){
 		set_motor(2, leftSpeed*(-1));
 }
 
-int readLine(){
+void readLine(){
 	/*Takes input from the camera and sends instructions to drive method */
 
 	error = 0;
@@ -103,8 +103,6 @@ int readLine(){
 	drive();
 	
 	prevError = error;
-
-return 0;
 }
 
 int readWall(){
