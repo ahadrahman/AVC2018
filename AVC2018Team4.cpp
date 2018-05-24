@@ -84,9 +84,15 @@ void readLine(){
 		}
 	}
 	if (sum < 10) { //if most of pixels are black, then go backwards
-		set_motor(1, -50);
-		set_motor(2, +50);
-		return;
+		if (mode == 1){ //go backwards
+			set_motor(1, -50);
+			set_motor(2, +50);
+			return;
+		}
+		if (mode == 2){ //turn around
+			turnAround();
+			return;
+		}
 	}
 
 	//calculate the error
@@ -113,9 +119,18 @@ void readLine(){
 }
 
 void turnLeft(){ //turn left 90d
+	set_motor(1, 65);
+	set_motor(2, 0);
+	sleep1(0,500000);
 	set_motor(1, 0);
-	set_motor(2, 50);
-	sleep1(1,0);
+	return;
+}
+
+void turnAround(){
+	set_motor(1, 65);
+	set_motor(2, 0);
+	sleep1(1, 0);
+	set_motor(1, 0);
 	return;
 }
 
