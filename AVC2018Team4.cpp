@@ -26,6 +26,22 @@ double speed = 50.0;
 double leftSpeed;
 double rightSpeed;
 
+void turnLeft(){ //turn left 90d
+	set_motor(1, 65);
+	set_motor(2, 0);
+	sleep1(0,500000);
+	set_motor(1, 0);
+	return;
+}
+
+void turnAround(){
+	set_motor(1, 65);
+	set_motor(2, 0);
+	sleep1(1, 0);
+	set_motor(1, 0);
+	return;
+}
+
 void drive(){
 /*Takes arguments and uses them to control the motors */
 		set_motor(1, rightSpeed);
@@ -116,22 +132,6 @@ void readLine(){
 	
 	prevError = error;
 
-}
-
-void turnLeft(){ //turn left 90d
-	set_motor(1, 65);
-	set_motor(2, 0);
-	sleep1(0,500000);
-	set_motor(1, 0);
-	return;
-}
-
-void turnAround(){
-	set_motor(1, 65);
-	set_motor(2, 0);
-	sleep1(1, 0);
-	set_motor(1, 0);
-	return;
 }
 
 int readWall(){
