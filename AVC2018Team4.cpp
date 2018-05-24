@@ -1,6 +1,8 @@
 #include  <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include "E101.h"
+#include <cmath>
 
 /* Automated Vehicle Challenge 2018, Team 4
  * ENGR101, trimester 1
@@ -22,14 +24,14 @@ double turnDifference; //dv
 double reactAmount = 0.01; //kp
 double smoothAmount = 0.05; //kd MYSTERY
 
-double speed = 50.0;
+double speed =  50.0;
 double leftSpeed;
 double rightSpeed;
 
 void turnLeft(){ //turn left 90d
-	set_motor(1, 65);
+	set_motor(1, 35);
 	set_motor(2, 0);
-	sleep1(0,500000);
+	sleep1(1,500000);
 	set_motor(1, 0);
 	return;
 }
@@ -85,13 +87,17 @@ void readLine(){
     }
     
     //if line is all white, stage = 2;
-    int sum = 0;
+    double sum = 0;
     for (int element = 0; element < 320; element++){
-		sum = sum + whi[element];
+		sum = sum + abs(whi[element]);
 	}
-	if (sum > 300){ //all white
+	
+	if (sum > 315){ //all white
 		if (mode == 1){
 			mode = 2;
+			set_motor(1, 40);
+			set_motor(2, -40);
+			sleep1(2, 0);
 			return;
 		}
 		else if (mode == 2){
@@ -99,17 +105,17 @@ void readLine(){
 			return;
 		}
 	}
-	if (sum < 10) { //if most of pixels are black, then go backwards
-		if (mode == 1){ //go backwards
-			set_motor(1, -50);
-			set_motor(2, +50);
-			return;
-		}
-		if (mode == 2){ //turn around
-			turnAround();
-			return;
-		}
-	}
+	//else if (sum < 10) { //if most of pixels are black, then go backwards/turn around
+		//if (mode == 1){ //go backwards
+			//set_motor(1, -50);
+			//set_motor(2, +50);
+			//return;
+		//}
+		//if (mode == 2){ //turn around
+			//turnAround();
+			//return;
+		//}
+	//}
 
 	//calculate the error
 	double error = 0;
@@ -177,7 +183,7 @@ int modeChecker(){
 * to readWall when we reach that stage 
 * network gate: 0, curvy line: 1, maze line: 2, walled maze: 3*/
 
-int stage = 1; ////set at 1 for testing purposes
+int stage = 0; //set at 0 for testing purposes
 
 return stage;
 }
@@ -185,6 +191,8 @@ return stage;
 int main (){
 /* Contains logic to run the right methods at the right time/stage */
 init(); 
+	
+sleep1(40, 0); //wait until we get to the table	
 	
 mode = modeChecker();
 while(1){
