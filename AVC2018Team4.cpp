@@ -73,7 +73,7 @@ void readLine(){
     
     //Find the threshold
     int thr = (max+min)/2;
-    printf(" min=%d max=%d threshold=%d\n", min, max,thr);
+    //printf(" min=%d max=%d threshold=%d\n", min, max,thr);
     
 	
     int whi[320];  //array for white pixels
@@ -196,7 +196,7 @@ sleep1(40, 0); //wait until we get to the table
 	
 mode = modeChecker();
 while(1){
-	printf("MODE: %d", mode);
+	printf("\nMODE: %d", mode);
 	switch (mode){
 		case 0: openGate(); //quadrant 1
 		case 1: readLine(); //quadrant 2
