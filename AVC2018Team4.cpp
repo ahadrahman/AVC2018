@@ -130,9 +130,9 @@ void readLine(){
 	turnDifference = p_error + d_error;
 	leftSpeed = speed + turnDifference;
 	rightSpeed = speed - turnDifference;
-	printf("P: %f, D: %f", p_error, d_error);
+	//printf("P: %f, D: %f", p_error, d_error);
 
-	printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
+	//printf("LS: %.2f  RS: %.2f ", leftSpeed, rightSpeed);
 
 	drive();
 	
